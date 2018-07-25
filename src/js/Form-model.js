@@ -130,7 +130,7 @@ FormModel.prototype.init = function() {
                 rootEl = $.parseXML( instance.xml || instance.xmlStr ).firstChild;
             } else if ( instance.xml instanceof XMLDocument ) {
                 if ( global.navigator.userAgent.indexOf( 'Trident/' ) >= 0 ) {
-                    // IE does not support adoptNode
+                    // IE does not support importNode
                     rootEl = that.importNode( instance.xml.documentElement, true );
                 } else {
                     // Create a clone of the root node
