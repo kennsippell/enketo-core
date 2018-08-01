@@ -139,6 +139,7 @@ module.exports = {
                 // It also prevents multiple .or-repeat[role="page"] to be shown on the same page
                 $( event.target ).removeClass( 'current contains-current' ).find( '.current' ).removeClass( 'current' );
                 // Don't flip if the user didn't create the repeat with the + button.
+                // or if is the default first instance created during loading.
                 if ( !byCountUpdate ) {
                     that.flipToPageContaining( $( event.target ) );
                 }

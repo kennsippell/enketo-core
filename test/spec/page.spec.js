@@ -3,6 +3,17 @@ var loadForm = require( '../helpers/loadForm' );
 
 describe( 'Pages mode', function() {
 
+    describe( 'Initial loading if form includes repeats-as-page', function() {
+
+        it( 'loads to the proper first page', function() {
+            var form = loadForm( 'pages.xml' );
+            form.init();
+
+            expect( form.pages.$current[ 0 ] ).toEqual( form.view.html.querySelector( '.question' ) );
+        } );
+
+    } );
+
     describe( 'ToC generation', function() {
 
         const ALL_EN = [ 'Note', 'Trigger', 'Text abc', 'Int abc', 'Int def', 'Group fl label', 'Range abc', 'Range ccc', 'Repeat Group label', 'Last' ];
