@@ -42,6 +42,7 @@ module.exports = {
                 this._setRepeatHandlers();
                 this._setBranchHandlers();
                 this._setSwipeHandlers();
+                this._setLangChangeHandlers();
                 this.active = true;
                 this._flipToFirst();
             }
@@ -98,7 +99,7 @@ module.exports = {
             return;
         }
         var that = this;
-        var $main = $( '.main' );
+        var $main = this.form.view.$.closest( '.main' );
 
         $main.swipe( 'destroy' );
         $main.swipe( {
@@ -131,7 +132,7 @@ module.exports = {
         var that = this;
         // TODO: can be optimized by smartly updating the active pages
         this.form.view.$
-            .off( 'addrepeat.pagemode' )
+            //.off( 'addrepeat.pagemode' )
             .on( 'addrepeat.pagemode', function( event, index, byCountUpdate ) {
                 that._updateAllActive();
                 // Removing the class in effect avoids the animation
@@ -142,13 +143,13 @@ module.exports = {
                     that.flipToPageContaining( $( event.target ) );
                 }
             } )
-            .off( 'removerepeat.pagemode' )
+            //.off( 'removerepeat.pagemode' )
             .on( 'removerepeat.pagemode', function( event ) {
                 // if the current page is removed
                 // note that that.$current will have length 1 even if it was removed from DOM!
                 if ( that.$current.closest( 'html' ).length === 0 ) {
                     that._updateAllActive();
-                    var $target = $( event.target )._prev();
+                    var $target = $( event.target ).prev();
                     if ( $target.length === 0 ) {
                         $target = $( event.target );
                     }
@@ -161,17 +162,24 @@ module.exports = {
         var that = this;
         // TODO: can be optimized by smartly updating the active pages
         this.form.view.$
-            .off( 'changebranch.pagemode' )
+            //.off( 'changebranch.pagemode' )
             .on( 'changebranch.pagemode', function() {
                 that._updateAllActive();
                 that._toggleButtons();
+            } );
+    },
+    _setLangChangeHandlers: function() {
+        var that = this;
+        this.form.view.$
+            .on( 'changelanguage.pagemode', function() {
+                that._updateToc();
             } );
     },
     _getCurrent: function() {
         return this.$current;
     },
     _updateAllActive: function( $all ) {
-        $all = $all || $( '.or [role="page"]' );
+        $all = $all || this.form.view.$.find( '[role="page"]' );
         this.$activePages = $all.filter( function() {
             var $this = $( this );
             return $this.closest( '.disabled' ).length === 0 &&
@@ -293,8 +301,7 @@ module.exports = {
     },
     _updateToc: function() {
         if ( this.$toc.length ) {
-            // regenerate complete ToC
-            // 1. extract first label of each page
+            // regenerate complete ToC from first enabled question/group label of each page
             var tocItems = this.$activePages.get()
                 .filter( function( pageEl ) {
                     return !pageEl.classList.contains( 'or-repeat-info' );

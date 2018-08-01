@@ -55,7 +55,10 @@ describe( 'Pages mode', function() {
                 .toEqual( ALL_EN );
 
             // Switch language
-            form.view.$.parent().find( '#form-languages' ).val( 'nl' ).trigger( 'change' );
+            var langSelector = form.view.html.parentNode.querySelector( '#form-languages' );
+            langSelector.value = 'nl';
+            langSelector.dispatchEvent( new Event( 'change' ) );
+
             expect( $toc.find( 'li' ).get().map( li => li.textContent ) )
                 .toEqual( ALL_NL );
 
