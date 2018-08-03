@@ -1,7 +1,7 @@
 var _language = navigator.language;
 var NUMBER = '0-9\u0660-\u0669';
 var TIME_PART = '[:' + NUMBER + ']+';
-var MERIDIAN_PART = '[^:' + NUMBER + ']+';
+var MERIDIAN_PART = '[^: ' + NUMBER + ']+';
 var HAS_MERIDIAN = new RegExp( '^(' + TIME_PART + ' ?(' + MERIDIAN_PART + '))|((' + MERIDIAN_PART + ') ?' + TIME_PART + ')$' );
 
 module.exports = {
