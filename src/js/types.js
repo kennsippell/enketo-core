@@ -182,16 +182,17 @@ var types = {
 
             return this.validate( x, requireMillis ) ? x : '';
         },
-        // converts "11:30 AM" and "11:30 " to "11:30"
-        // converts "11:30 PM" to "23:30"
+        // converts "11:30 AM" and "11:30 ", and "11:30 上午" to "11:30"
+        // converts "11:30 PM", and "11:30 下午" to "23:30"
         convertMeridian: function( x ) {
             x = x.trim();
             if ( format.time.hasMeridian( x ) ) {
-                var parts = x.split( ' ' )[ 0 ].split( ':' );
+                var parts = x.split( ' ' );
+                var timeParts = parts[ 0 ].split( ':' );
                 if ( parts.length > 0 ) {
-                    // This will only work for latin numbers but that should be fine.
-                    parts[ 0 ] = Number( parts[ 0 ] ) + 12;
-                    x = parts.join( ':' );
+                    // This will only work for latin numbers but that should be fine because that's what the widget supports.
+                    timeParts[ 0 ] = parts[ 1 ] === format.time.pmNotation ? Number( timeParts[ 0 ] ) + 12 : timeParts[ 0 ];
+                    x = timeParts.join( ':' );
                 }
             }
             return x;

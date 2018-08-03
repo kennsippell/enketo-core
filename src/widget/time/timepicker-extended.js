@@ -43,6 +43,10 @@ TimepickerExtended.prototype._init = function() {
     $fakeTimeI.timepicker( {
             defaultTime: ( timeVal.length > 0 ) ? timeVal : false,
             showMeridian: timeFormat.hour12,
+            meridianNotation: {
+                am: timeFormat.amNotation,
+                pm: timeFormat.pmNotation
+            }
         } ).val( timeVal )
         //the time picker itself has input elements
         .closest( '.widget' ).find( 'input' ).addClass( 'ignore' );

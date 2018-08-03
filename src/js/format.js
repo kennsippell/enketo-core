@@ -14,7 +14,13 @@ module.exports = {
             return HAS_MERIDIAN.test( new Date().toLocaleTimeString( _language ) );
         },
         get pmNotation() {
-            var matches = new Date( '01-01-1970 23:00:00' ).toLocaleTimeString( _language ).match( HAS_MERIDIAN );
+            return this.meridianNotation( '01-01-1970 23:00:00' );
+        },
+        get amNotation() {
+            return this.meridianNotation( '01-01-1970 01:00:00' );
+        },
+        meridianNotation: function( dt ) {
+            var matches = new Date( dt ).toLocaleTimeString( _language ).match( HAS_MERIDIAN );
             if ( matches && matches.length ) {
                 matches = matches.filter( function( item ) { return !!item; } );
                 return matches[ matches.length - 1 ];
