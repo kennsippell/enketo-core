@@ -3,9 +3,10 @@
 var Widget = require( '../../js/Widget' );
 var support = require( '../../js/support' );
 var $ = require( 'jquery' );
+var timeFormat = require( '../../js/format' ).time;
+var types = require( '../../js/types' );
 require( './timepicker' );
 require( '../../js/dropdown.jquery' );
-
 var pluginName = 'timepickerExtended';
 
 /**
@@ -41,13 +42,14 @@ TimepickerExtended.prototype._init = function() {
 
     $fakeTimeI.timepicker( {
             defaultTime: ( timeVal.length > 0 ) ? timeVal : false,
-            showMeridian: false
+            showMeridian: timeFormat.hour12,
         } ).val( timeVal )
         //the time picker itself has input elements
         .closest( '.widget' ).find( 'input' ).addClass( 'ignore' );
 
     $fakeTimeI.on( 'change', function() {
-        $timeI.val( this.value ).trigger( 'change' );
+        var modified = timeFormat.hour12 ? types.time.convertMeridian( this.value ) : this.value;
+        $timeI.val( modified ).trigger( 'change' );
         return false;
     } );
 

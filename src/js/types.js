@@ -1,6 +1,7 @@
 'use strict';
 
 var utils = require( './utils' );
+var format = require( './format' );
 var types = {
     'string': {
         convert: function( x ) {
@@ -180,6 +181,20 @@ var types = {
             x = o.hours + ':' + o.minutes + ':' + o.seconds + ( o.milliseconds ? '.' + o.milliseconds : '' ) + offset;
 
             return this.validate( x, requireMillis ) ? x : '';
+        },
+        // converts "11:30 AM" and "11:30 " to "11:30"
+        // converts "11:30 PM" to "23:30"
+        convertMeridian: function( x ) {
+            x = x.trim();
+            if ( format.time.hasMeridian( x ) ) {
+                var parts = x.split( ' ' )[ 0 ].split( ':' );
+                if ( parts.length > 0 ) {
+                    // This will only work for latin numbers but that should be fine.
+                    parts[ 0 ] = Number( parts[ 0 ] ) + 12;
+                    x = parts.join( ':' );
+                }
+            }
+            return x;
         }
     },
     'barcode': {
