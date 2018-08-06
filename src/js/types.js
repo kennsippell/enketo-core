@@ -182,8 +182,8 @@ var types = {
 
             return this.validate( x, requireMillis ) ? x : '';
         },
-        // converts "11:30 AM" and "11:30 ", and "11:30 上午" to "11:30"
-        // converts "11:30 PM", and "11:30 下午" to "23:30"
+        // converts "11:30 AM", and "11:30 ", and "11:30 上午" to: "11:30"
+        // converts "11:30 PM", and "11:30 下午" to: "23:30"
         convertMeridian: function( x ) {
             x = x.trim();
             if ( format.time.hasMeridian( x ) ) {
