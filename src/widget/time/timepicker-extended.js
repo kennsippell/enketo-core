@@ -23,7 +23,6 @@ function TimepickerExtended( element, options ) {
 }
 
 TimepickerExtended.prototype = Object.create( Widget.prototype );
-
 TimepickerExtended.prototype.constructor = TimepickerExtended;
 
 /**
@@ -31,9 +30,8 @@ TimepickerExtended.prototype.constructor = TimepickerExtended;
  */
 TimepickerExtended.prototype._init = function() {
     var $timeI = $( this.element );
-    var timeVal = this.value;
     var $fakeTime = $( '<div class="widget timepicker">' +
-        '<input class="ignore timepicker-default" type="text" value="' + timeVal + '" placeholder="hh:mm" />' +
+        '<input class="ignore timepicker-default" type="text" placeholder="hh:mm" />' +
         this.resetButtonHtml + '</div>' );
     var $resetBtn = $fakeTime.find( '.btn-reset' );
     var $fakeTimeI = $fakeTime.find( 'input' );
@@ -49,8 +47,7 @@ TimepickerExtended.prototype._init = function() {
             }
         } )
         // using setTime ensures that the fakeInput shows the meridan when needed
-        .timepicker( 'setTime', timeVal );
-
+        .timepicker( 'setTime', this.element.value );
 
     $fakeTimeI.on( 'change', function() {
         var modified = timeFormat.hour12 ? types.time.convertMeridian( this.value ) : this.value;
