@@ -597,23 +597,15 @@ Form.prototype.setEventHandlers = function() {
     this.view.$.on( 'change.file',
         'input:not(.ignore), select:not(.ignore), textarea:not(.ignore)',
         function() {
-            var requiredExpr;
             var $input = $( this );
             var n = {
                 path: that.input.getName( $input ),
                 inputType: that.input.getInputType( $input ),
                 xmlType: that.input.getXmlType( $input ),
-                enabled: that.input.isEnabled( $input ),
-                constraint: that.input.getConstraint( $input ),
                 val: that.input.getVal( $input ),
-                required: that.input.getRequired( $input ),
                 index: that.input.getIndex( $input )
             };
 
-            // determine 'required' check if applicable
-            if ( n.enabled && n.inputType !== 'hidden' && n.required ) {
-                requiredExpr = n.required;
-            }
             // set file input values to the uniqified actual name of file (without c://fakepath or anything like that)
             if ( n.val.length > 0 && n.inputType === 'file' && $input[ 0 ].files[ 0 ] && $input[ 0 ].files[ 0 ].size > 0 ) {
                 n.val = utils.getFilename( $input[ 0 ].files[ 0 ], $input[ 0 ].dataset.filenamePostfix );
@@ -624,7 +616,7 @@ Form.prototype.setEventHandlers = function() {
                 }, $input[ 0 ].dataset.filenamePostfix );
             }
 
-            that.model.node( n.path, n.index ).setVal( n.val, n.constraint, n.xmlType, requiredExpr, true );
+            that.model.node( n.path, n.index ).setVal( n.val, n.xmlType );
 
             that.validateInput( $input )
                 .then( function( valid ) {

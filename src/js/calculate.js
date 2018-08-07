@@ -40,8 +40,6 @@ module.exports = {
             var dataNodeName = ( name.lastIndexOf( '/' ) !== -1 ) ? name.substring( name.lastIndexOf( '/' ) + 1 ) : name;
             var expr = that.form.input.getCalculation( $control );
             var dataType = that.form.input.getXmlType( $control );
-            // for inputs that have a calculation and need to be validated
-            var constraintExpr = that.form.input.getConstraint( $control );
             var relevantExpr = that.form.input.getRelevant( $control );
             var dataNodesObj = that.form.model.node( name );
             var dataNodes = dataNodesObj.get();
@@ -114,12 +112,15 @@ module.exports = {
                 dataNodesObj.setIndex( index );
 
                 // set the value
-                dataNodesObj.setVal( result, constraintExpr, dataType );
+                dataNodesObj.setVal( result, dataType );
 
                 // Not the most efficient to use input.setVal here as it will do another lookup
                 // of the node, that we already have...
                 // We should not use value "result" here because node.setVal() may have done a data type conversion
                 that.form.input.setVal( $control, dataNodesObj.getVal()[ 0 ] );
+
+                //TODO: only if validateContinuously is true??
+                //$control.trigger( 'change' );
             }
         } );
     }
