@@ -819,6 +819,7 @@ describe( 'validation', function() {
                 done();
             } );
         } );
+
     } );
 
     describe( 'public validate method', function() {
@@ -921,6 +922,28 @@ describe( 'validation', function() {
                 }, 800 );
             }, 800 );
         } );
+
+        it( 'immediately validates fields that get their values updated programmatically but have no constraint dependencies', function( done ) {
+            form = loadForm( 'readonly-invalid.xml' );
+            form.init();
+            config.validateContinuously = true;
+            var src = '[name="/readonly-invalid/txt"]';
+            var one = '[name="/readonly-invalid/n1"]';
+            var two = '[name="/readonly-invalid/n2"]';
+
+            setValue( src, 'invalid' )
+                .then( function() {
+                    expect( form.view.$.find( one ).closest( '.question' ).hasClass( 'invalid-constraint' ) ).toBe( true );
+                    expect( form.view.$.find( two ).closest( '.question' ).hasClass( 'invalid-constraint' ) ).toBe( true );
+                    return setValue( src, 'valid' );
+                } )
+                .then( function() {
+                    expect( form.view.$.find( one ).closest( '.question' ).hasClass( 'invalid-constraint' ) ).toBe( false );
+                    expect( form.view.$.find( two ).closest( '.question' ).hasClass( 'invalid-constraint' ) ).toBe( false );
+                    done();
+                } );
+        } );
+
     } );
 
 } );

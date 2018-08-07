@@ -7,6 +7,7 @@
  */
 
 var $ = require( 'jquery' );
+var config = require( 'enketo/config' );
 
 module.exports = {
     update: function( updated, filter ) {
@@ -119,8 +120,13 @@ module.exports = {
                 // We should not use value "result" here because node.setVal() may have done a data type conversion
                 that.form.input.setVal( $control, dataNodesObj.getVal()[ 0 ] );
 
-                //TODO: only if validateContinuously is true??
-                //$control.trigger( 'change' );
+                /*
+                 * We need to specifically call validate on the question itself, because the validationUpdate
+                 * in the evaluation cascade only updates questions with a _dependency_ on this question.
+                 */
+                if ( config.validateContinuously === true ) {
+                    that.form.validateInput( $control );
+                }
             }
         } );
     }

@@ -546,6 +546,11 @@ Form.prototype.grosslyViolateStandardComplianceByIgnoringCertainCalcs = function
     }
 };
 
+/**   
+ * This re-validates questions that have a dependency on a question that has just been updated.
+ * 
+ * Note: it does not take care of re-validating a question itself after its value has changed due to a calculation update!
+ */
 Form.prototype.validationUpdate = function( updated ) {
     var $nodes;
     var that = this;
@@ -567,6 +572,7 @@ Form.prototype.validationUpdate = function( updated ) {
             };
         }
 
+        // Find all inputs that have a dependency on the changed node.
         $nodes = this.getRelatedNodes( 'data-constraint', '', upd )
             .add( this.getRelatedNodes( 'data-required', '', upd ) );
 
