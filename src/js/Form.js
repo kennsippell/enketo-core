@@ -343,7 +343,10 @@ Form.prototype.setAllVals = function( $group, groupIndex ) {
             var value = $node.text();
             var name = that.model.getXPath( $node.get( 0 ), 'instance' );
             var index = that.model.node( name ).get().index( this );
-            that.input.setVal( name, index, value );
+            var $control = that.input.find( name, index );
+            if ( $control.length ) {
+                that.input.setVal( $control, value );
+            }
         } catch ( e ) {
             console.error( e );
             // TODO: Test if this correctly adds to loadErrors

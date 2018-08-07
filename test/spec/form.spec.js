@@ -242,10 +242,11 @@ describe( 'Loading instance values into html input fields functionality', functi
 
     // https://github.com/kobotoolbox/enketo-express/issues/718
     it( 'correctly populates if the first radiobutton or first checkbox only has a value', function() {
-        form = loadForm( 'issue208.xml' );
+        form = loadForm( 'issue208.xml', '<issue208><rep><nodeA>yes</nodeA></rep></issue208>' );
         form.init();
-        form.input.setVal( '/issue208/rep/nodeA', 0, 'yes' );
-        expect( form.view.$.find( '[data-name="/issue208/rep/nodeA"]' ).eq( 0 ).is( ':checked' ) ).toBe( true );
+        var $input = form.view.$.find( '[data-name="/issue208/rep/nodeA"]' ).eq( 0 );
+        //form.input.setVal( $input, 'yes' );
+        expect( $input.is( ':checked' ) ).toBe( true );
     } );
 
 } );
