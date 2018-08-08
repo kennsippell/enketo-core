@@ -34,7 +34,7 @@ module.exports = {
                 this.$btnPrev = this.$formFooter.find( '.previous-page' );
                 this.$btnNext = this.$formFooter.find( '.next-page' );
                 this.$btnLast = this.$formFooter.find( '.last-page' );
-                this.$toc = $( formWrapper.querySelector( '.page-toc' ) );
+                this.$toc = $( formWrapper.querySelector( '.pages-toc__list' ) );
                 this._updateAllActive( $allPages );
                 this._updateToc();
                 this._toggleButtons( 0 );
@@ -66,6 +66,7 @@ module.exports = {
         if ( $closest.length ) {
             this._flipTo( $closest[ 0 ] );
         }
+        this.$toc.parent().find( '.pages-toc__overlay' ).click();
     },
     _setButtonHandlers: function() {
         var that = this;
@@ -131,13 +132,17 @@ module.exports = {
     },
     _setTocHandlers: function() {
         var that = this;
-        this.$toc.on( 'click', 'a', function() {
-            if ( !that.form.pageNavigationBlocked ) {
-                var index = $( this.parentNode ).prevAll().length;
-                that.flipToPageContaining( $( that.tocItems[ index ].pageEl ) );
-            }
-            return false;
-        } );
+        this.$toc
+            .on( 'click', 'a', function() {
+                if ( !that.form.pageNavigationBlocked ) {
+                    var index = $( this.parentNode ).prevAll().length;
+                    that.flipToPageContaining( $( that.tocItems[ index ].pageEl ) );
+                }
+                return false;
+            } )
+            .parent().find( '.pages-toc__overlay' ).on( 'click', function() {
+                that.$toc.parent().find( '#toc-toggle' ).prop( 'checked', false );
+            } );
     },
     _setRepeatHandlers: function() {
         var that = this;
@@ -320,13 +325,13 @@ module.exports = {
                 } ).map( function( pageEl ) {
                     var labelEl = pageEl.querySelector( '.question-label.active' );
                     if ( !labelEl ) {
-                        console.error( 'active page without label?', pageEl );
                         return false;
                     }
                     var label = labelEl.textContent;
                     return { pageEl: pageEl, label: label };
                 } );
             this.$toc.empty()[ 0 ].append( this._getTocHtmlFragment( this.tocItems ) );
+            this.$toc.closest( '.pages-toc' ).removeClass( 'hide' );
         }
     },
     _getTocHtmlFragment: function( tocItems ) {
@@ -335,7 +340,7 @@ module.exports = {
             var li = document.createElement( 'li' );
             var a = document.createElement( 'a' );
             a.setAttribute( 'href', '#' + item.pageEl.querySelector( '[name]' ).getAttribute( 'name' ) );
-            a.textContent = item.label.substr( 0, 20 );
+            a.textContent = item.label;
             li.append( a );
             items.appendChild( li );
         } );
