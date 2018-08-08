@@ -4,11 +4,9 @@
         "browser": true,
         "node": false,
         "commonjs": true,
-        "mocha": true,
         "jasmine": true
     },
     "globals": {
-        "expect": true,
         "spyOn": true
     },
     "extends": "eslint:recommended",
