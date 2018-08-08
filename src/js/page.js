@@ -42,6 +42,7 @@ module.exports = {
                 this._setRepeatHandlers();
                 this._setBranchHandlers();
                 this._setSwipeHandlers();
+                this._setTocHandlers();
                 this._setLangChangeHandlers();
                 this.active = true;
                 this._flipToFirst();
@@ -126,6 +127,16 @@ module.exports = {
                     that._getCurrent().find( ':focus' ).blur();
                 }
             }
+        } );
+    },
+    _setTocHandlers: function() {
+        var that = this;
+        this.$toc.on( 'click', 'a', function() {
+            if ( !that.form.pageNavigationBlocked ) {
+                var index = $( this.parentNode ).prevAll().length;
+                that.flipToPageContaining( $( that.tocItems[ index ].pageEl ) );
+            }
+            return false;
         } );
     },
     _setRepeatHandlers: function() {
@@ -303,7 +314,7 @@ module.exports = {
     _updateToc: function() {
         if ( this.$toc.length ) {
             // regenerate complete ToC from first enabled question/group label of each page
-            var tocItems = this.$activePages.get()
+            this.tocItems = this.$activePages.get()
                 .filter( function( pageEl ) {
                     return !pageEl.classList.contains( 'or-repeat-info' );
                 } ).map( function( pageEl ) {
@@ -315,14 +326,17 @@ module.exports = {
                     var label = labelEl.textContent;
                     return { pageEl: pageEl, label: label };
                 } );
-            this.$toc.empty()[ 0 ].append( this._getTocHtmlFragment( tocItems ) );
+            this.$toc.empty()[ 0 ].append( this._getTocHtmlFragment( this.tocItems ) );
         }
     },
     _getTocHtmlFragment: function( tocItems ) {
         var items = document.createDocumentFragment();
         tocItems.forEach( function( item ) {
             var li = document.createElement( 'li' );
-            li.textContent = item.label.substr( 0, 20 );
+            var a = document.createElement( 'a' );
+            a.setAttribute( 'href', '#' + item.pageEl.querySelector( '[name]' ).getAttribute( 'name' ) );
+            a.textContent = item.label.substr( 0, 20 );
+            li.append( a );
             items.appendChild( li );
         } );
         return items;
