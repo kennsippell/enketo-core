@@ -103,16 +103,22 @@ module.exports = {
         if ( !el ) {
             return 0;
         }
-        var checkEl = el.parentElement;
-        var type = el.classList.contains( 'or-repeat' ) ? 'repeat' : 'repeat-info';
-        var selector = type === 'repeat' ? '.or-repeat[name="' + el.getAttribute( 'name' ) + '"]' : '.or-repeat-info[data-name="' + el.dataset.name + '"]';
-        var count = type === 'repeat' ? Number( el.querySelector( '.repeat-number' ).textContent ) : 1;
-        while ( checkEl && checkEl.nodeName !== 'form' ) {
-            while ( checkEl.previousElementSibling && checkEl.previousElementSibling.classList.contains( 'or-repeat' ) ) {
+        var checkEl = el.parentElement.closest( '.or-repeat' );
+        var info = el.classList.contains( 'or-repeat-info' );
+        var count = info ? 1 : Number( el.querySelector( '.repeat-number' ).textContent );
+        var name;
+        while ( checkEl ) {
+            while ( checkEl.previousElementSibling && checkEl.previousElementSibling.matches( '.or-repeat' ) ) {
                 checkEl = checkEl.previousElementSibling;
-                count += checkEl.querySelectorAll( selector ).length;
+                if ( info ) {
+                    count++;
+                } else {
+                    name = name || el.getAttribute( 'name' );
+                    count += checkEl.querySelectorAll( '.or-repeat[name="' + name + '"]' ).length;
+                }
             }
-            checkEl = checkEl.parentElement;
+            var parent = checkEl.parentElement;
+            checkEl = parent ? parent.closest( '.or-repeat' ) : null;
         }
         return count - 1;
     },
