@@ -95,6 +95,27 @@ module.exports = {
 
         this.countUpdate();
     },
+    /*
+     * Obtains the absolute index of the provided repeat or repeat-info element
+     * The goal of this function is to make non-nested repeat index determination as fast as possible.
+     */
+    getIndex: function( el ) {
+        if ( !el ) {
+            return 0;
+        }
+        var checkEl = el.parentElement;
+        var type = el.classList.contains( 'or-repeat' ) ? 'repeat' : 'repeat-info';
+        var selector = type === 'repeat' ? '.or-repeat[name="' + el.getAttribute( 'name' ) + '"]' : '.or-repeat-info[data-name="' + el.dataset.name + '"]';
+        var count = type === 'repeat' ? Number( el.querySelector( '.repeat-number' ).textContent ) : 1;
+        while ( checkEl && checkEl.nodeName !== 'form' ) {
+            while ( checkEl.previousElementSibling && checkEl.previousElementSibling.classList.contains( 'or-' + type ) ) {
+                checkEl = checkEl.previousElementSibling;
+                count += checkEl.querySelectorAll( selector ).length;
+            }
+            checkEl = checkEl.parentElement;
+        }
+        return count - 1;
+    },
     /**
      * [updateViewInstancesFromModel description]
      * @param  {[type]} idx           not used but part of jQuery.each
@@ -253,22 +274,31 @@ module.exports = {
         $clone = $( this.templates[ repeatPath ] ).clone();
 
         // Determine the index of the repeat series.
-        repeatSeriesIndex = this.form.view.$.find( '.or-repeat-info[data-name="' + repeatPath + '"]' ).index( repeatInfo );
+        repeatSeriesIndex = this.getIndex( repeatInfo ); //this.form.view.$.find( '.or-repeat-info[data-name="' + repeatPath + '"]' ).index( repeatInfo );
         modelRepeatSeriesLength = this.form.model.getRepeatSeries( repeatPath, repeatSeriesIndex ).length;
+        // Determine the index of the repeat inside its series
+        var prevSibling = repeatInfo.previousElementSibling;
+        var repeatIndexInSeries = prevSibling && prevSibling.classList.contains( 'or-repeat' ) ?
+            Number( prevSibling.querySelector( '.repeat-number' ).textContent ) : 0;
 
         // Add required number of repeats
         for ( i = 0; i < count; i++ ) {
             // Fix names of radio button groups
             $clone.find( '.option-wrapper' ).each( this.fixRadioNames );
             $clone.find( 'datalist' ).each( this.fixDatalistIds );
+
             // Insert the clone
             $clone.insertBefore( repeatInfo );
 
-            if ( $clone.prev( '.or-repeat' ).length ) {
+            if ( repeatIndexInSeries > 0 ) {
                 // Also add the clone class for all 2+ numbers as this is
                 // used for performance optimization in several places.
                 $clone.addClass( 'clone' );
             }
+
+            // Update the repeat number
+            $clone[ 0 ].querySelector( '.repeat-number' ).textContent = repeatIndexInSeries + 1;
+
             // Update the variable containing the view repeats in the current series.
             $repeats = $repeats.add( $clone );
 
@@ -279,7 +309,7 @@ module.exports = {
             }
             // This is the index of the new repeat in relation to all other repeats of the same name,
             // even if they are in different series.
-            repeatIndex = repeatIndex || this.form.view.$.find( '.or-repeat[name="' + repeatPath + '"]' ).index( $clone );
+            repeatIndex = repeatIndex || this.getIndex( $clone[ 0 ] ); //this.form.view.$.find( '.or-repeat[name="' + repeatPath + '"]' ).index( $clone );
             // This will trigger setting default values, calculations, readonly, relevancy, and automatic page flips.
             $clone.trigger( 'addrepeat', [ repeatIndex, byCountUpdate ] );
             // Initialize widgets in clone after default values have been set
@@ -300,10 +330,11 @@ module.exports = {
             $clone = $( this.templates[ repeatPath ] ).clone();
 
             repeatIndex++;
+            repeatIndexInSeries++;
         }
 
         // number the repeats
-        this.numberRepeats( repeatInfo );
+        //this.numberRepeats( repeatInfo );
         // enable or disable + and - buttons
         this.toggleButtons( repeatInfo );
 
@@ -313,7 +344,7 @@ module.exports = {
         var that = this;
         var $next = $repeat.next( '.or-repeat, .or-repeat-info' );
         var repeatPath = $repeat.attr( 'name' );
-        var repeatIndex = this.form.view.$.find( '.or-repeat[name="' + repeatPath + '"]' ).index( $repeat );
+        var repeatIndex = this.getIndex( $repeat[ 0 ] ); // this.form.view.$.find( '.or-repeat[name="' + repeatPath + '"]' ).index( $repeat );
         var repeatInfo = $repeat.siblings( '.or-repeat-info' )[ 0 ];
 
         delay = typeof delay !== 'undefined' ? delay : 600;
